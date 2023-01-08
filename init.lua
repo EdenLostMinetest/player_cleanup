@@ -6,8 +6,11 @@
 --
 pcleaner = {}
 
--- How long to sleep (in seconds) between removal of players in queue.
+-- How long to sleep (in seconds) between batches.
 local delay = 1.0
+
+-- How many players to remove per batch.
+local batch_size = 10
 
 -- Queue of players to remove.
 local queue = {}
@@ -150,10 +153,13 @@ local function load_player_list(fname)
 end
 
 local function process_queue()
-    local pname = next(queue)
-    if pname == nil then return end
-    pcleaner.remove_player(pname)
-    queue[pname] = nil
+    for i = 1, batch_size, 1 do
+        local pname = next(queue)
+        if pname == nil then return end
+        pcleaner.remove_player(pname)
+        queue[pname] = nil
+    end
+
     minetest.after(delay, process_queue)
 end
 
@@ -175,7 +181,7 @@ local function chat_cmd_handler(pname, param)
     else
         minetest.chat_send_player(pname, 'Unrecognized /pcleaner command.')
         for i, k in ipairs(parts) do
-           log('/pcleaner ' .. i .. ' ' .. type(parts[i]) .. ' ' .. parts[i])
+            log('/pcleaner ' .. i .. ' ' .. type(parts[i]) .. ' ' .. parts[i])
         end
     end
 end

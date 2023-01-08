@@ -43,15 +43,26 @@ never implemented. So this mod is split into two pieces:
 1. Carefully examine `list.txt`. These are the players that will be removed from
    the server. You can hand-edit this file if you want to.
 
+1. Leave a shell open with a `tail -f` on the server log file.  If the logs are
+   too spammy due to other player or mod activity, then do something like this:
+
+   `$ tail -f ./logs/debug.txt | grep --line-buffered pcleaner`
+
 1. Log into the game world as a user with `staff` privs.
 
-1. Chat command: `/pcleaner dryrun list.txt` and note the returned chat message.
+1. Chat command: `/pcleaner load list.txt` and note the returned chat message.
 
-1. When satisfied, run `/pcleaner delete list.txt` and the mod will remove all
+1. (Optional), Adjust how long the mod sleeps (in seconds) between batches
+   of player deletions.  `/pcleaner delay 10.0`.
+
+1. When satisfied, run `/pcleaner run` and the mod will remove all
    data for that player (player inventory, auth data, mailbox, etc...). To avoid
    halting the server while processing a huge list, the server will actually
    perform the removal in small batches, and run cycles every second until all
    targetted player accounts are removed.
+
+1. If you want to abort a run in progress, then `/pcleaner cancel`.  You should
+   regenerate the list and reload it before trying again.
 
 ## Player Removal
 
