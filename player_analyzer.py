@@ -9,7 +9,7 @@ import pprint
 
 min_xp = 1
 min_actions = 1
-login_threshold = int(time.time()) - (86400 * 370)
+login_threshold = int(time.time()) - (86400 * 90)
 
 # Keep all playes with any of these privs.
 special_privs = ["citizenship", "staff"]
@@ -88,7 +88,7 @@ def read_player_data():
 
     cursor.execute("select name, strftime('%s', creation_date) from player")
     for rec in cursor.fetchall():
-        get_player(rec[0])["creation_date"] = rec[1]
+        get_player(rec[0])["creation_date"] = int(rec[1])
 
     cursor.execute("select player, metadata, value from player_metadata")
     for rec in cursor.fetchall():
@@ -125,10 +125,6 @@ def keep_player(player):
     if info["last_login"] > login_threshold:
         return True
 
-    # Only look for no logins ever
-    if info["last_login"] > -1:
-        return True
-
     # Drop player if we have auth data and no player data.
     if info["auth_id"] > 0 and info["creation_date"] < 1:
         return False
@@ -138,10 +134,7 @@ def keep_player(player):
     if info["auth_id"] < 0 and info["creation_date"] > 0:
         return False
 
-    return True
-
-
-#    return False
+    return False
 
 # Return list of players to delete.
 def filter_players():
