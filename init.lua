@@ -58,18 +58,18 @@ end
 local function remove_atm_stuff(pname)
     if minetest.get_modpath('atm') == nil then return end
 
-    atm.readaccounts()
+    atm.read_account(pname)
     if type(atm.balance[pname]) == 'number' then
         log('Removing atm.balance for ' .. pname .. '' .. atm.balance[pname])
         atm.balance[pname] = nil
-        atm.saveaccounts()
+        atm.save_account(pname)
     end
 
-    atm.read_transactions()
+    atm.read_transaction(pname)
     if atm.completed_transactions[pname] then
         log('Removing atm.completed_transactions for ' .. pname)
         atm.completed_transactions[pname] = nil
-        atm.write_transactions()
+        atm.write_transaction(pname)
     end
     -- TOOD: Whould we remove transaction from other players that involved
     -- the nuked player?
@@ -100,8 +100,10 @@ end
 local function remove_mailbox(pname)
     -- https://github.com/minetest-mail/mail_mod.git
     if minetest.get_modpath('mail') then
-        remove_file(mail.getMailFile(pname))
-        remove_file(mail.getContactsFile(pname))
+      -- TODO: mail mod now uses mod-storage, and needs an API change to
+      -- remove mailbox data for a named user.
+        -- remove_file(mail.getMailFile(pname))
+        -- remove_file(mail.getContactsFile(pname))
     end
 end
 
